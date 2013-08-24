@@ -18,6 +18,9 @@ static char THIS_FILE[]=__FILE__;
 
 CAAnt::CAAnt()
 {
+        direction = right;
+        position = 0;
+        step = 0.5;
         InitOneAnt();
 }
 
@@ -29,18 +32,19 @@ CAAnt::~CAAnt()
 void CAAnt::InitOneAnt()
 {
         status = live;
-        direction = right;
-        position = 0;
-        step = 1;
         course = 0;
 }
 
-int CAAnt::GetCourse(void) {
+float CAAnt::GetCourse(void) {
         return course;
 }
 
-int CAAnt::GetPosition(void) {
+float CAAnt::GetPosition(void) {
         return position;
+}
+
+float CAAnt::GetStep(void) {
+        return step;
 }
 
 COLORREF CAAnt::GetColor(void) {
@@ -56,8 +60,12 @@ bool CAAnt::isDead(void) {
         }
 }
 
-void CAAnt::SetPosition(int pos) {
+void CAAnt::SetPosition(float pos) {
         position = pos;
+}
+
+void CAAnt::SetStep(float stp) {
+        step = stp;
 }
 
 void CAAnt::SetColor(COLORREF clr) {
@@ -89,10 +97,10 @@ void CAAnt::Move(int edge) {
         }
 
         // 检测是否走到尽头
-        if (position >= edge - 1 && direction == right) {
+        if (position >= edge - 1 - step && direction == right) {
                 direction = left;
         }
-        else if (position <= 0 && direction == left) {
+        else if (position <= 0 + step && direction == left) {
                 direction = right;
         }
 
@@ -104,5 +112,5 @@ void CAAnt::Move(int edge) {
                 position += step;
         }
         // 行走的路程增加
-        course++;
+        course += step;
 }

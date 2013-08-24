@@ -12,6 +12,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#define SPEED 600
+
 #include "mmsystem.h"                   //导入声音头文件
 #pragma comment(lib,"winmm.lib")        //导入声音头文件库
 
@@ -70,7 +72,11 @@ CAntsDlg::CAntsDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CAntsDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CAntsDlg)
-		// NOTE: the ClassWizard will add member initialization here
+	m_stepA = 0.5f;
+	m_stepB = 0.5f;
+	m_stepC = 0.5f;
+	m_stepD = 0.5f;
+	m_stepE = 0.5f;
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -80,7 +86,11 @@ void CAntsDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CAntsDlg)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
+	DDX_Text(pDX, IDC_STEP_A, m_stepA);
+	DDX_Text(pDX, IDC_STEP_B, m_stepB);
+	DDX_Text(pDX, IDC_STEP_C, m_stepC);
+	DDX_Text(pDX, IDC_STEP_D, m_stepD);
+	DDX_Text(pDX, IDC_STEP_E, m_stepE);
 	//}}AFX_DATA_MAP
 }
 
@@ -95,6 +105,9 @@ BEGIN_MESSAGE_MAP(CAntsDlg, CDialog)
 	ON_BN_CLICKED(IDC_MIN, OnMin)
 	ON_BN_CLICKED(IDC_MAX, OnMax)
 	ON_BN_CLICKED(IDC_ABOUT, OnAbout)
+	ON_BN_CLICKED(IDC_RANDSTEP, OnRandStep)
+	ON_BN_CLICKED(IDC_STOP, OnStop)
+	ON_BN_CLICKED(IDC_PAUSE, OnPause)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -114,6 +127,9 @@ BOOL CAntsDlg::OnInitDialog()
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	if (pSysMenu != NULL)
 	{
+                // 禁用关闭按钮
+                pSysMenu->DeleteMenu(SC_CLOSE,MF_BYCOMMAND);
+
 		CString strAboutMenu;
 		strAboutMenu.LoadString(IDS_ABOUTBOX);
 		if (!strAboutMenu.IsEmpty())
@@ -129,7 +145,24 @@ BOOL CAntsDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
 	// TODO: Add extra initialization here
-        
+
+        // 设置文本框最大字符长度
+        CEdit * pEdt;
+        pEdt = (CEdit *) GetDlgItem(IDC_STEP_A);
+        pEdt->SetLimitText(3);
+        pEdt = (CEdit *) GetDlgItem(IDC_STEP_B);
+        pEdt->SetLimitText(3);
+        pEdt = (CEdit *) GetDlgItem(IDC_STEP_C);
+        pEdt->SetLimitText(3);
+        pEdt = (CEdit *) GetDlgItem(IDC_STEP_D);
+        pEdt->SetLimitText(3);
+        pEdt = (CEdit *) GetDlgItem(IDC_STEP_E);
+        pEdt->SetLimitText(3);
+
+        // 禁用暂停、停止按钮
+        GetDlgItem(IDC_PAUSE)->EnableWindow(FALSE);
+        GetDlgItem(IDC_STOP)->EnableWindow(FALSE);
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -179,8 +212,10 @@ void CAntsDlg::OnPaint()
 	{
                 CWnd* pWnd = GetDlgItem(IDC_STATIC_DRAW);
                 CDC* pDC = pWnd->GetDC();
+
                 pWnd->Invalidate();
                 pWnd->UpdateWindow();
+                
 
                 // 画杆子
                 int x = theCore.stickPosition.x * theCore.GetStickPixel();
@@ -188,7 +223,7 @@ void CAntsDlg::OnPaint()
                 CRect stickBody(x,
                                 y,
                                 x + theCore.GetStickLength() * theCore.GetStickPixel(),
-                                y + int (0.5 * theCore.GetStickPixel())
+                                y + int (0.4 * theCore.GetStickPixel())
                                );
                 CBrush* stickBrush = new CBrush;
                 stickBrush->CreateSolidBrush(RGB(0x8B, 0x45, 0x13));
@@ -198,8 +233,8 @@ void CAntsDlg::OnPaint()
                 // 画蚂蚁
                 for (int i = 0; i < theCore.GetAntsNumber(); i++) {
                         if (!theCore.ants[i].isDead()) {
-                                int x = (theCore.stickPosition.x + theCore.ants[i].GetPosition()) * theCore.GetStickPixel();
-                                int y = (theCore.stickPosition.y - 1) * theCore.GetStickPixel();
+                                int x = int ((theCore.stickPosition.x + theCore.ants[i].GetPosition()) * theCore.GetStickPixel());
+                                int y = (theCore.stickPosition.y - 1)  * theCore.GetStickPixel();
                                 CRect antBody(x,
                                               y,
                                               x + theCore.GetStickPixel(),
@@ -245,20 +280,41 @@ HBRUSH CAntsDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 void CAntsDlg::OnTimer(UINT nIDEvent) 
 {
 	// TODO: Add your message handler code here and/or call default
-        Invalidate();
-        UpdateWindow();
-        
-        // 判断是否有蚂蚁胜利
-        if (theCore.victor) {
-                KillTimer(1);
-                CString text;
-                text.Format("经过了%d秒，%d号蚂蚁胜利了！", theCore.timeCounter, theCore.victor);
-                // 播放胜利声音
-                PlaySound((LPCTSTR)IDR_WIN, AfxGetInstanceHandle(), SND_RESOURCE | SND_ASYNC);
 
-                CWnd::MessageBox(text, "结果", MB_OK);
+        // 此处解决了窗口闪烁的问题！
+        CWnd* pWnd = GetDlgItem(IDC_STATIC_DRAW);
+        CRect rect;
+        pWnd->GetClientRect(&rect);
+        InvalidateRect(rect);
+        UpdateWindow();
+
+
+
+        // 判断是否有蚂蚁胜利
+
+        if (theCore.victor != -1) {
+                CString text;
+                KillTimer(1);
+
+                if (theCore.victor == 0) {
+                        text.Format("经过了%d秒，所有蚂蚁同归于尽！", theCore.timeCounter);
+                }
+                else {
+                        text.Format("经过了%d秒，%d号蚂蚁胜利了！", theCore.timeCounter, theCore.victor);
+                }
+
+                // 播放结束声音
+                PlaySound((LPCTSTR)IDR_WIN, AfxGetInstanceHandle(), SND_RESOURCE | SND_ASYNC);
+                CWnd::MessageBox(text, "结果", MB_ICONWARNING | MB_OK);
+                GetDlgItem(IDC_PAUSE)->EnableWindow(FALSE);
+                GetDlgItem(IDC_STOP)->EnableWindow(FALSE);
+                GetDlgItem(IDC_RANDSTEP)->EnableWindow(TRUE);
+                GetDlgItem(IDC_RAND)->EnableWindow(TRUE);
+                GetDlgItem(IDC_MAX)->EnableWindow(TRUE);
+                GetDlgItem(IDC_MIN)->EnableWindow(TRUE);
                 return;
         }
+
         
         theCore.antsMove();
         theCore.timeCounter++;
@@ -270,29 +326,79 @@ void CAntsDlg::OnTimer(UINT nIDEvent)
 void CAntsDlg::OnRand() 
 {
 	// TODO: Add your control notification handler code here
-        KillTimer(1);
-        theCore.InitAnts();
+        UpdateData();
+        //if (!(m_stepA && m_stepB && m_stepC && m_stepD && m_stepE)) {
+        if (m_stepA <= 0 || m_stepA > 1 ||
+            m_stepB <= 0 || m_stepB > 1 ||
+            m_stepC <= 0 || m_stepC > 1 ||
+            m_stepD <= 0 || m_stepD > 1 ||
+            m_stepE <= 0 || m_stepE > 1) {
+                CWnd::MessageBox("王浩宇：请检查步长设置。", "小错误", MB_ICONERROR | MB_OK);
+                return;
+        }
+
+        OnStop();
+        UpdateStep();
         theCore.RandTime();
-        SetTimer(1, 600, NULL);
-        
+        SetTimer(1, SPEED, NULL);
+        GetDlgItem(IDC_PAUSE)->EnableWindow(TRUE);
+        GetDlgItem(IDC_STOP)->EnableWindow(TRUE);
+        GetDlgItem(IDC_RANDSTEP)->EnableWindow(FALSE);
+        GetDlgItem(IDC_RAND)->EnableWindow(FALSE);
+        GetDlgItem(IDC_MAX)->EnableWindow(FALSE);
+        GetDlgItem(IDC_MIN)->EnableWindow(FALSE);
 }
 
 void CAntsDlg::OnMin() 
 {
 	// TODO: Add your control notification handler code here
-        KillTimer(1);
-        theCore.InitAnts();
+        UpdateData();
+        //if (!(m_stepA && m_stepB && m_stepC && m_stepD && m_stepE)) {
+        if (m_stepA <= 0 || m_stepA > 1 ||
+            m_stepB <= 0 || m_stepB > 1 ||
+            m_stepC <= 0 || m_stepC > 1 ||
+            m_stepD <= 0 || m_stepD > 1 ||
+            m_stepE <= 0 || m_stepE > 1) {
+                CWnd::MessageBox("王浩宇：请检查步长设置。", "小错误", MB_ICONERROR | MB_OK);
+                return;
+        }
+
+        OnStop();
+        UpdateStep();
         theCore.CaculMinTime();
-        SetTimer(1, 600, NULL);
+        SetTimer(1, SPEED, NULL);
+        GetDlgItem(IDC_PAUSE)->EnableWindow(TRUE);
+        GetDlgItem(IDC_STOP)->EnableWindow(TRUE);
+        GetDlgItem(IDC_RANDSTEP)->EnableWindow(FALSE);
+        GetDlgItem(IDC_RAND)->EnableWindow(FALSE);
+        GetDlgItem(IDC_MAX)->EnableWindow(FALSE);
+        GetDlgItem(IDC_MIN)->EnableWindow(FALSE);
 }
 
 void CAntsDlg::OnMax() 
 {
 	// TODO: Add your control notification handler code here
-        KillTimer(1);
-        theCore.InitAnts();
+        UpdateData();
+        //if (!(m_stepA && m_stepB && m_stepC && m_stepD && m_stepE)) {
+        if (m_stepA <= 0 || m_stepA > 1 ||
+            m_stepB <= 0 || m_stepB > 1 ||
+            m_stepC <= 0 || m_stepC > 1 ||
+            m_stepD <= 0 || m_stepD > 1 ||
+            m_stepE <= 0 || m_stepE > 1) {
+                CWnd::MessageBox("王浩宇：请检查步长设置。", "小错误", MB_ICONERROR | MB_OK);
+                return;
+        }
+
+        OnStop();
+        UpdateStep();
         theCore.CaculMaxTime();
-        SetTimer(1, 600, NULL);	
+        SetTimer(1, SPEED, NULL);
+        GetDlgItem(IDC_PAUSE)->EnableWindow(TRUE);
+        GetDlgItem(IDC_STOP)->EnableWindow(TRUE);
+        GetDlgItem(IDC_RANDSTEP)->EnableWindow(FALSE);
+        GetDlgItem(IDC_RAND)->EnableWindow(FALSE);
+        GetDlgItem(IDC_MAX)->EnableWindow(FALSE);
+        GetDlgItem(IDC_MIN)->EnableWindow(FALSE);
 }
 
 void CAntsDlg::OnCancel() 
@@ -307,4 +413,62 @@ void CAntsDlg::OnAbout()
 	// TODO: Add your control notification handler code here
         CAboutDlg dlg;
         dlg.DoModal();
+}
+
+void CAntsDlg::OnRandStep() 
+{
+	// TODO: Add your control notification handler code here
+
+        theCore.RandStep();
+        UpdateStep(false);
+        UpdateData(FALSE);
+}
+
+void CAntsDlg::UpdateStep(bool needSet)
+{
+        if (needSet) {
+                theCore.ants[0].SetStep(m_stepA);
+                theCore.ants[1].SetStep(m_stepB);
+                theCore.ants[2].SetStep(m_stepC);
+                theCore.ants[3].SetStep(m_stepD);
+                theCore.ants[4].SetStep(m_stepE);
+        }
+        else {
+                m_stepA = theCore.ants[0].GetStep();
+                m_stepB = theCore.ants[1].GetStep();
+                m_stepC = theCore.ants[2].GetStep();
+                m_stepD = theCore.ants[3].GetStep();
+                m_stepE = theCore.ants[4].GetStep();
+        }
+}
+
+
+void CAntsDlg::OnStop() 
+{
+	// TODO: Add your control notification handler code here
+        KillTimer(1);
+        theCore.InitAnts();
+        GetDlgItem(IDC_PAUSE)->EnableWindow(FALSE);
+        GetDlgItem(IDC_STOP)->EnableWindow(FALSE);
+        GetDlgItem(IDC_RANDSTEP)->EnableWindow(TRUE);
+        GetDlgItem(IDC_RAND)->EnableWindow(TRUE);
+        GetDlgItem(IDC_MAX)->EnableWindow(TRUE);
+        GetDlgItem(IDC_MIN)->EnableWindow(TRUE);
+	Invalidate();
+}
+
+
+void CAntsDlg::OnPause() 
+{
+	// TODO: Add your control notification handler code here
+        CString text;
+        GetDlgItem(IDC_PAUSE)->GetWindowText(text);
+        if  (text == "暂停演示") {
+                KillTimer(1);
+                GetDlgItem(IDC_PAUSE)->SetWindowText("继续演示");
+        }
+        else if (text == "继续演示") {
+                SetTimer(1, SPEED, NULL);
+                GetDlgItem(IDC_PAUSE)->SetWindowText("暂停演示");
+        }                
 }

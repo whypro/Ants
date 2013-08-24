@@ -6,6 +6,21 @@
 --------------------Configuration: Ants - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Debug/Ants.res" /d "_DEBUG" /d "_AFXDLL" "D:\Backup\我的文档\Microsoft Visual Studio 6.0\MyProjects\Visual C++\MFC 方法\Ants_v2\Ants.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP2BD.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/Ants.pdb" /debug /machine:I386 /out:"Debug/Ants.exe" /pdbtype:sept 
+".\Debug\AAnt.obj"
+".\Debug\Ants.obj"
+".\Debug\AntsCore.obj"
+".\Debug\AntsDlg.obj"
+".\Debug\StdAfx.obj"
+".\Debug\Ants.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP2BD.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Linking...
 
 
 

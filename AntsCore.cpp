@@ -27,8 +27,8 @@ static char THIS_FILE[]=__FILE__;
 
 CAntsCore::CAntsCore()
 {
-        stickPosition.Offset(6, 7);
-        stickPixel = 10;
+        stickPosition.Offset(4, 5);
+        stickPixel = 20;
         stickLength = 27;
         antsNumber = 5;
         ants = new CAAnt[antsNumber];
@@ -37,7 +37,7 @@ CAntsCore::CAntsCore()
 
 CAntsCore::~CAntsCore()
 {
-        delete ants;
+
 }
 
 int CAntsCore::GetStickPixel(void) {
@@ -55,7 +55,7 @@ int CAntsCore::GetAntsNumber() {
 void CAntsCore::InitAnts()
 {
         timeCounter = 0;
-        victor = 0;
+        victor = -1;
 
         // 初始化每只蚂蚁状态
         for (int i = 0; i < antsNumber; i++) {
@@ -89,8 +89,12 @@ void CAntsCore::antsMove() {
                 }
         }
         // 当只剩下一只蚂蚁时
-        if (alive == 1) {
+        if (1 == alive) {
                 victor = j;
+                return;
+        }
+        else if (0 == alive) {
+                victor = 0;
                 return;
         }
 
@@ -104,16 +108,17 @@ void CAntsCore::antsMove() {
                 }
         }
 
-        // 检测是否有相遇的蚂蚁 （此算法效率很低，有待于改进）
+        // 检测是否有相遇的蚂蚁
         for (i = 0; i < antsNumber; i++) {
                 for (j = i + 1; j < antsNumber; j++) {
-                        if (ants[i].GetPosition() == ants[j].GetPosition() ||           // 相遇
-                            ants[i].GetPosition() + 1 == ants[j].GetPosition()          // 相邻
-                           ) {
-                                if (ants[j].GetCourse() < ants[i].GetCourse()) {
+                        // 两只蚂蚁的距离
+                        float posDiff = abs(ants[i].GetPosition() - ants[j].GetPosition());
+                        float minDiff = abs(ants[i].GetStep() - ants[j].GetStep());
+                        if (posDiff <= minDiff) {
+                                if (ants[j].GetCourse() - ants[i].GetCourse() < -0.1) {
                                         ants[j].Kill();
                                 }
-                                else if (ants[j].GetCourse() > ants[i].GetCourse()) {
+                                else if (ants[j].GetCourse() - ants[i].GetCourse() > 0.1) {
                                         ants[i].Kill();
                                 }
                                 else {
@@ -124,18 +129,20 @@ void CAntsCore::antsMove() {
                 }
         }
 
+
 }
 
 
 void CAntsCore::RandTime()
 {
         // 初始化蚂蚁方向（随机）
-        srand((unsigned)time(NULL));
-        ants[0].SetDirection(rand() % 2);
-        ants[1].SetDirection(rand() % 2);
-        ants[2].SetDirection(rand() % 2);
-        ants[3].SetDirection(rand() % 2);
-        ants[4].SetDirection(rand() % 2);
+        // 此处不用 rand() % 2
+        srand(unsigned (time(NULL)));
+        ants[0].SetDirection(rand() / (RAND_MAX / 2 + 1));
+        ants[1].SetDirection(rand() / (RAND_MAX / 2 + 1));
+        ants[2].SetDirection(rand() / (RAND_MAX / 2 + 1));
+        ants[3].SetDirection(rand() / (RAND_MAX / 2 + 1));
+        ants[4].SetDirection(rand() / (RAND_MAX / 2 + 1));
 }
 
 void CAntsCore::CaculMaxTime()
@@ -161,7 +168,7 @@ void CAntsCore::CaculMaxTime()
                         ants[j].SetDirection(tmpDir[j]);
                 }
                 // 测试时间（模拟）
-                while (!victor) {
+                while (victor == -1) {
                         antsMove();
                         timeCounter++;
                 }
@@ -203,7 +210,7 @@ void CAntsCore::CaculMinTime()
                         ants[j].SetDirection(tmpDir[j]);
                 }
                 // 测试时间（模拟）
-                while (!victor) {
+                while (victor == -1) {
                         antsMove();
                         timeCounter++;
                 }
@@ -220,4 +227,15 @@ void CAntsCore::CaculMinTime()
                 ants[i].SetDirection(minDir[i]);
         }
 
+}
+
+void CAntsCore::RandStep()
+{
+        // 初始化蚂蚁步长（速度）
+        srand(unsigned (time(NULL)));
+        ants[0].SetStep(float (rand()) / float (RAND_MAX) + 0);
+        ants[1].SetStep(float (rand()) / float (RAND_MAX) + 0);
+        ants[2].SetStep(float (rand()) / float (RAND_MAX) + 0);
+        ants[3].SetStep(float (rand()) / float (RAND_MAX) + 0);
+        ants[4].SetStep(float (rand()) / float (RAND_MAX) + 0);
 }

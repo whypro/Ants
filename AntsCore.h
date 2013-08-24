@@ -26,6 +26,7 @@ public:
         int timeCounter;                // ¼ÆÊ±Æ÷
 
 public:
+	void RandStep();
 	CAntsCore();                    
 	virtual ~CAntsCore();
 

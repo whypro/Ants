@@ -73,32 +73,43 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Ants.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 195, 105
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 198, 107
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "关于..."
 FONT 9, "宋体"
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,17,17,20,20
-    LTEXT           "Ants v1.0",IDC_STATIC,52,17,119,8,SS_NOPREFIX
+    ICON            IDR_MAINFRAME,IDC_STATIC,17,17,21,21
+    LTEXT           "Ants v2.1",IDC_STATIC,52,17,119,8,SS_NOPREFIX
     LTEXT           "Copyleft 2010, Whypro Studio",IDC_STATIC,52,30,119,8
-    DEFPUSHBUTTON   "确定",IDOK,20,71,42,14,WS_GROUP
-    LTEXT           "版权没有 翻版不究\n请加以修改和完善，并注明原作者",
-                    IDC_STATIC,52,44,124,18
-    PUSHBUTTON      "取消",IDCANCEL,132,71,42,14,WS_GROUP
+    DEFPUSHBUTTON   "确定",IDOK,21,79,42,14,WS_GROUP
+    LTEXT           "版权没有 翻版不究\n请加以修改和完善\n并注明原作者：王浩宇",
+                    IDC_STATIC,52,44,129,29
+    PUSHBUTTON      "取消",IDCANCEL,133,79,42,14,WS_GROUP
 END
 
-IDD_ANTS_DIALOG DIALOGEX 0, 0, 320, 200
+IDD_ANTS_DIALOG DIALOGEX 0, 0, 515, 263
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "蚂蚁生存问题"
-FONT 9, "宋体"
+FONT 9, "宋体", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "随机",IDC_RAND,27,149,41,14
-    PUSHBUTTON      "退出",IDCANCEL,195,149,41,14
-    LTEXT           "",IDC_STATIC_DRAW,26,29,267,99,SS_SUNKEN
-    PUSHBUTTON      "最短时间",IDC_MIN,83,149,41,14
-    PUSHBUTTON      "最长时间",IDC_MAX,139,149,41,14
-    PUSHBUTTON      "关于...",IDC_ABOUT,251,149,41,14
+    PUSHBUTTON      "随机移动",IDC_RAND,39,219,42,16
+    PUSHBUTTON      "退出",IDCANCEL,423,219,42,16
+    LTEXT           "",IDC_STATIC_DRAW,23,18,468,132,SS_SUNKEN
+    PUSHBUTTON      "最短时间",IDC_MIN,103,219,42,16
+    PUSHBUTTON      "最长时间",IDC_MAX,167,219,42,16
+    PUSHBUTTON      "关于...",IDC_ABOUT,359,219,42,16
+    EDITTEXT        IDC_STEP_A,47,172,42,16,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STEP_B,122,172,42,16,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STEP_C,197,172,42,16,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STEP_D,272,172,42,16,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STEP_E,347,172,42,16,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "随机步长",IDC_RANDSTEP,422,172,42,16
+    GROUPBOX        "步长设置 （请输入小于 1 的数值）",IDC_STATIC,23,155,468,
+                    45
+    GROUPBOX        "演示控制",IDC_STATIC,23,203,468,45
+    PUSHBUTTON      "停止演示",IDC_STOP,295,219,42,16
+    PUSHBUTTON      "暂停演示",IDC_PAUSE,231,219,42,16
 END
 
 
@@ -109,8 +120,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 2,1,5,0
+ PRODUCTVERSION 2,1,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -123,17 +134,20 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "080404B0"
+        BLOCK "080404b0"
         BEGIN
+            VALUE "Comments", "\0"
             VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Ants Microsoft 基础类应用程序\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "蚂蚁生存问题\0"
+            VALUE "FileVersion", "2, 1, 5, 0\0"
             VALUE "InternalName", "Ants\0"
-            VALUE "LegalCopyright", "版权所有 (C) 2009\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "Ants.EXE\0"
-            VALUE "ProductName", "Ants 应用程序\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "LegalCopyright", "版权没有 2009\0"
+            VALUE "LegalTrademarks", "Ants\0"
+            VALUE "OriginalFilename", "Ants.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "蚂蚁生存问题\0"
+            VALUE "ProductVersion", "2, 1, 5, 0\0"
+            VALUE "SpecialBuild", "\0"
         END
     END
     BLOCK "VarFileInfo"
@@ -156,17 +170,17 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 188
+        RIGHTMARGIN, 190
         TOPMARGIN, 7
-        BOTTOMMARGIN, 98
+        BOTTOMMARGIN, 100
     END
 
     IDD_ANTS_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 313
+        RIGHTMARGIN, 508
         TOPMARGIN, 7
-        BOTTOMMARGIN, 193
+        BOTTOMMARGIN, 256
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -178,7 +192,6 @@ END
 //
 
 IDR_WIN                 WAVE    DISCARDABLE     "res\\win.wav"
-IDR_KILL                WAVE    DISCARDABLE     "res\\kill.wav"
 
 /////////////////////////////////////////////////////////////////////////////
 //

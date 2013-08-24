@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CAboutDlg
+LastClass=CAntsDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ants.h"
@@ -35,7 +35,7 @@ Type=0
 BaseClass=CDialog
 HeaderFile=AntsDlg.h
 ImplementationFile=AntsDlg.cpp
-LastObject=IDC_ABOUT
+LastObject=IDC_MAX
 Filter=D
 VirtualFilter=dWC
 
@@ -53,11 +53,21 @@ Control6=IDCANCEL,button,1342373888
 [DLG:IDD_ANTS_DIALOG]
 Type=1
 Class=CAntsDlg
-ControlCount=6
-Control1=IDC_RAND,button,1342242817
+ControlCount=16
+Control1=IDC_RAND,button,1342242816
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_STATIC_DRAW,static,1342312448
 Control4=IDC_MIN,button,1342242816
 Control5=IDC_MAX,button,1342242816
 Control6=IDC_ABOUT,button,1342242816
+Control7=IDC_STEP_A,edit,1350631552
+Control8=IDC_STEP_B,edit,1350631552
+Control9=IDC_STEP_C,edit,1350631552
+Control10=IDC_STEP_D,edit,1350631552
+Control11=IDC_STEP_E,edit,1350631552
+Control12=IDC_RANDSTEP,button,1342242817
+Control13=IDC_STATIC,button,1342177287
+Control14=IDC_STATIC,button,1342177287
+Control15=IDC_STOP,button,1342242816
+Control16=IDC_PAUSE,button,1342242816
 

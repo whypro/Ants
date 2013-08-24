@@ -14,6 +14,14 @@
 #define IDC_MIN                         1002
 #define IDC_MAX                         1003
 #define IDC_ABOUT                       1004
+#define IDC_STEP_A                      1005
+#define IDC_STEP_B                      1006
+#define IDC_STEP_C                      1007
+#define IDC_STEP_D                      1008
+#define IDC_STEP_E                      1009
+#define IDC_RANDSTEP                    1010
+#define IDC_STOP                        1011
+#define IDC_PAUSE                       1012
 
 // Next default values for new objects
 // 
@@ -21,7 +29,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_CONTROL_VALUE         1011
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

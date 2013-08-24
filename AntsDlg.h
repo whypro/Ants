@@ -15,12 +15,17 @@ class CAntsDlg : public CDialog
 {
 // Construction
 public:
+	void UpdateStep(bool needSet = true);
 	CAntsDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(CAntsDlg)
 	enum { IDD = IDD_ANTS_DIALOG };
-		// NOTE: the ClassWizard will add data members here
+	float	m_stepA;
+	float	m_stepB;
+	float	m_stepC;
+	float	m_stepD;
+	float	m_stepE;
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
@@ -46,6 +51,9 @@ protected:
 	afx_msg void OnMax();
 	afx_msg void OnAbout();
 	virtual void OnCancel();
+	afx_msg void OnRandStep();
+	afx_msg void OnStop();
+	afx_msg void OnPause();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
